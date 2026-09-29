@@ -15,7 +15,7 @@ Murid dapat mengintegrasikan logika *if-else* (pemrosesan data) dengan layanan n
 ### 1. Membuat Topic SNS
 1. Buka dashboard **SNS** -> **Topics** -> **Create topic**.
 2. **Type**: Pilih **Standard**.
-3. **Name**: `AlertSuhuRuangan`.
+3. **Name**: `AlertSuhuRuangan-NamaSiswa`.
 4. Klik **Create topic**.
 5. Buka *Topic* -> **Subscriptions** -> **Create subscription**.
 6. **Protocol**: **Email**.
