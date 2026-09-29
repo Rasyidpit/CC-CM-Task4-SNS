@@ -81,9 +81,25 @@ def lambda_handler(event, context):
 
 ---
 
-## 🚀 Langkah 5: Mengaktifkan Function URL (Agar bisa dibuka di Browser)
+## 🚀 Langkah 5: Mengaktifkan Function URL
 1. Tab **"Configuration"** -> **"Function URL"**.
 2. Klik **"Create function URL"**.
 3. **Auth type**: **NONE**.
 4. **CORS**: Klik **Edit**, centang **"Allow all origins (*)"**, klik **Save**.
 5. Salin URL yang muncul dan buka di browser!
+
+---
+
+## 🚀 Langkah 6: Pengujian (Testing)
+1. Buka URL yang telah disalin di browser Anda.
+2. **Uji Kondisi Aman**: Masukkan angka `25` pada input suhu, lalu klik tombol **"Cek"**. Layar akan menampilkan "Status: Suhu 25C - Aman."
+3. **Uji Kondisi Bahaya**: Masukkan angka `35` pada input suhu, lalu klik tombol **"Cek"**. Layar akan menampilkan "Status: Suhu 35C - Peringatan terkirim!".
+4. **Cek Email**: Pastikan Anda menerima email notifikasi dari AWS (cek folder *Spam* jika tidak ditemukan di *Inbox*).
+
+---
+
+## ⚠️ PENTING: Pembersihan (Wajib!)
+Setelah selesai, **WAJIB** hapus sumber daya agar tidak ada biaya:
+1. **SNS**: Hapus Topik dan Subscription yang Anda buat.
+2. **Lambda**: Pilih fungsi -> **Actions** -> **Delete function**.
+",file_path:
