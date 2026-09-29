@@ -11,7 +11,7 @@ Membuat sistem peringatan otomatis menggunakan **AWS Lambda** (sebagai pemroses 
 2. **Klik "Create function"** (tombol oranye di kanan atas).
 3. **Pilih opsi**: "Author from scratch".
 4. **Isi konfigurasi**:
-   - **Function name**: `kalkulator-[nama-siswa]`
+   - **Function name**: `FunctionAlert-NamaSiswa`
    - **Runtime**: Pilih **Python 3.12**.
    - **Architecture**: Biarkan default (x86_64).
 5. **Role (PENTING)**:
@@ -23,7 +23,7 @@ Membuat sistem peringatan otomatis menggunakan **AWS Lambda** (sebagai pemroses 
 
 ## 🚀 Langkah 2: Membuat Topik SNS (Notifikasi)
 1. Buka dashboard **SNS** -> **Topics** -> **Create topic**.
-2. **Type**: **Standard**. **Name**: `AlertSuhuRuangan`. Klik **Create topic**.
+2. **Type**: **Standard**. **Name**: `AlertSuhuRuangan-NamaSiswa`. Klik **Create topic**.
 3. Buka topik tersebut -> tab **"Subscriptions"** -> **"Create subscription"**.
 4. **Protocol**: **Email**. **Endpoint**: Masukkan email kamu. Klik **Create subscription**.
 5. **Konfirmasi**: Cek inbox email kamu, cari pesan dari AWS, klik **"Confirm subscription"**.
