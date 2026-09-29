@@ -16,7 +16,7 @@ Kita akan membangun sistem **Smart Room Monitor** yang mampu mendeteksi suhu rua
 ## 📋 Materi Tugas
 Semua instruksi langkah-demi-langkah dan tugas praktikum dapat ditemukan di file berikut:
 
-👉 **[Buka Tugas Praktikum: Task-CC-Notification.md](./Task-CC-Notification.md)**
+👉 **[Buka Tugas Praktikum: Task-CC-Notification.md]([./Task-CC-Notification.md](https://github.com/Rasyidpit/CC-CM-Task4-SNS/blob/main/Task-CC-Notification.md))**
 
 ---
 
