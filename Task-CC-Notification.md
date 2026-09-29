@@ -1,36 +1,48 @@
 # 🔔 Tugas Praktikum: Sistem Peringatan Suhu (AWS SNS)
 
-## 💡 Apa itu AWS SNS?
-**AWS SNS (Simple Notification Service)** adalah layanan pesan otomatis. Di tugas ini, kita akan membuat sistem monitoring suhu yang **otomatis mengirim email peringatan** jika suhu ruangan terlalu panas (> 30 derajat Celcius).
-
----
-
 ## 🎯 Tujuan Tugas
-Murid dapat mengintegrasikan logika pemrosesan data (Lambda) dengan layanan notifikasi (SNS).
+Membuat sistem peringatan otomatis menggunakan **AWS Lambda** (sebagai pemroses data) dan **AWS SNS** (sebagai pengirim notifikasi email).
 
 ---
 
-## 🚀 Langkah-Langkah Praktikum
+## 🚀 Langkah 1: Membuat Fungsi Lambda dari Awal
 
-### 1. Membuat Topic SNS
-1. Buka dashboard **SNS** -> klik **"Topics"** di menu kiri -> **"Create topic"**.
-2. **Type**: Pilih **Standard**.
-3. **Name**: `AlertSuhuRuangan`. Klik **Create topic**.
-4. Setelah dibuat, klik nama topik yang baru dibuat.
-5. Klik tab **"Subscriptions"** -> **"Create subscription"**.
-6. **Protocol**: Pilih **"Email"**.
-7. **Endpoint**: Masukkan alamat email Anda.
-8. Klik **"Create subscription"**.
-9. **PENTING**: Buka email Anda, cari pesan dari AWS, dan klik **"Confirm subscription"**.
+1. **Buka AWS Console**: Ketik "Lambda" di kolom pencarian.
+2. **Klik "Create function"** (tombol oranye di kanan atas).
+3. **Pilih opsi**: "Author from scratch".
+4. **Isi konfigurasi**:
+   - **Function name**: `kalkulator-[nama-siswa]`
+   - **Runtime**: Pilih **Python 3.12**.
+   - **Architecture**: Biarkan default (x86_64).
+5. **Role (PENTING)**:
+   - Klik "Change default execution role".
+   - Pilih "Create a new role with basic Lambda permissions".
+   - Klik **"Create function"**.
 
-### 2. Mengambil ARN Topik
-1. Di halaman detail Topik Anda, cari baris **"Topic ARN"**.
-2. Salin teks tersebut (formatnya: `arn:aws:sns:region:akun:AlertSuhuRuangan`). **Simpan ini!**
+---
 
-### 3. Update Kode Lambda
-1. Buka fungsi Lambda Anda -> tab **"Code"**.
-2. Hapus semua kode dan masukkan kode di bawah ini:
-   *(Jangan lupa ganti `ISI_ARN_TOPIC_KAMU_DISINI` dengan ARN yang Anda salin tadi)*
+## 🚀 Langkah 2: Membuat Topik SNS (Notifikasi)
+1. Buka dashboard **SNS** -> **Topics** -> **Create topic**.
+2. **Type**: **Standard**. **Name**: `AlertSuhuRuangan`. Klik **Create topic**.
+3. Buka topik tersebut -> tab **"Subscriptions"** -> **"Create subscription"**.
+4. **Protocol**: **Email**. **Endpoint**: Masukkan email kamu. Klik **Create subscription**.
+5. **Konfirmasi**: Cek inbox email kamu, cari pesan dari AWS, klik **"Confirm subscription"**.
+
+---
+
+## 🚀 Langkah 3: Memberikan Izin Lambda ke SNS
+Agar Lambda bisa mengirim email ke SNS:
+1. Kembali ke halaman fungsi Lambda Anda -> tab **"Configuration"** -> **"Permissions"**.
+2. Klik link **Role name** (warna biru). Anda akan diarahkan ke halaman IAM.
+3. Klik **"Add permissions"** -> **"Attach policies"**.
+4. Cari `AmazonSNSFullAccess`, centang, dan klik **"Attach policies"**.
+
+---
+
+## 🚀 Langkah 4: Memasukkan Kode Program
+1. Di halaman fungsi Lambda, tab **"Code"**, hapus isi `lambda_function.py`.
+2. Tempel kode di bawah ini. **Ganti** `ISI_ARN_TOPIC_KAMU_DISINI` dengan ARN Topik Anda (bisa dilihat di halaman detail Topic SNS).
+3. Klik tombol **"Deploy"** (biru).
 
 ```python
 import json
@@ -41,48 +53,37 @@ TOPIC_ARN = 'ISI_ARN_TOPIC_KAMU_DISINI'
 
 def lambda_handler(event, context):
     params = event.get('queryStringParameters', {})
-    
-    # 1. Bagian API: Jika ada input suhu, cek dan kirim email
     if 'suhu' in params:
         suhu = int(params.get('suhu'))
         if suhu > 30:
             sns.publish(
                 TopicArn=TOPIC_ARN,
-                Message=f"⚠️ PERINGATAN: Suhu ruangan mencapai {suhu} derajat!",
+                Message=f"⚠️ PERINGATAN: Suhu mencapai {suhu}C!",
                 Subject="Alert: Suhu Terlalu Panas!"
             )
             return {'statusCode': 200, 'body': f"Suhu {suhu}C - Peringatan terkirim!"}
         return {'statusCode': 200, 'body': f"Suhu {suhu}C - Aman."}
 
-    # 2. Bagian UI: Jika tidak ada input, kirim UI Kalkulator
-    return {
-        'statusCode': 200,
-        'headers': {"Content-Type": "text/html"},
-        'body': """
-        <!DOCTYPE html>
-        <html>
-        <body style="font-family:sans-serif; text-align:center; padding:50px;">
-            <h2>Sistem Monitoring Suhu</h2>
-            <input type="number" id="suhu" placeholder="Masukkan Suhu (e.g 35)">
-            <button onclick="cekSuhu()">Cek Suhu</button>
-            <h3 id="hasil">Status: -</h3>
-            <script>
-                async function cekSuhu() {
-                    const s = document.getElementById('suhu').value;
-                    const url = window.location.href + "?suhu=" + s;
-                    const res = await fetch(url).then(r => r.text());
-                    document.getElementById('hasil').innerText = res;
-                }
-            </script>
-        </body>
-        </html>
-        """
-    }
+    # UI Kalkulator
+    return {'statusCode': 200, 'headers': {"Content-Type": "text/html"}, 'body': """
+    <html><body style="text-align:center; padding:50px;">
+        <h2>Monitoring Suhu</h2>
+        <input type="number" id="suhu" placeholder="Angka Suhu">
+        <button onclick="f()">Cek</button>
+        <h3 id="hasil">Status: -</h3>
+        <script>async function f(){
+            const s=document.getElementById('suhu').value;
+            const res=await fetch(window.location.href+'?suhu='+s).then(r=>r.text());
+            document.getElementById('hasil').innerText=res;
+        }</script>
+    </body></html>"""}
 ```
-3. Klik tombol **"Deploy"** (biru).
 
-### 4. Mengetes Hasil
-1. Buka kembali **Function URL** Anda di browser.
-2. Masukkan angka `25` -> klik **"Cek Suhu"** (Hasil: Aman).
-3. Masukkan angka `35` -> klik **"Cek Suhu"** (Hasil: Peringatan terkirim!).
-4. Cek inbox email Anda, pesan peringatan akan masuk!
+---
+
+## 🚀 Langkah 5: Mengaktifkan Function URL (Agar bisa dibuka di Browser)
+1. Tab **"Configuration"** -> **"Function URL"**.
+2. Klik **"Create function URL"**.
+3. **Auth type**: **NONE**.
+4. **CORS**: Klik **Edit**, centang **"Allow all origins (*)"**, klik **Save**.
+5. Salin URL yang muncul dan buka di browser!
